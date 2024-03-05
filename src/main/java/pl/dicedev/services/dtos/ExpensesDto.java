@@ -11,8 +11,18 @@ public class ExpensesDto {
 
     private UUID id;
     private BigDecimal amount;
-    private Instant purchaseData;
+    private Instant purchaseDate;
     private ExpensesCategory category;
+
+    public ExpensesDto() {
+    }
+
+    public ExpensesDto(UUID id, BigDecimal amount, Instant purchaseDate, ExpensesCategory category) {
+        this.id = id;
+        this.amount = amount;
+        this.purchaseDate = purchaseDate;
+        this.category = category;
+    }
 
     public UUID getId() {
         return id;
@@ -30,12 +40,12 @@ public class ExpensesDto {
         this.amount = amount;
     }
 
-    public Instant getPurchaseData() {
-        return purchaseData;
+    public Instant getPurchaseDate() {
+        return purchaseDate;
     }
 
-    public void setPurchaseData(Instant purchaseData) {
-        this.purchaseData = purchaseData;
+    public void setPurchaseDate(Instant purchaseDate) {
+        this.purchaseDate = purchaseDate;
     }
 
     public ExpensesCategory getCategory() {
@@ -64,7 +74,7 @@ public class ExpensesDto {
         return "ExpensesDto{" +
                 "id=" + id +
                 ", amount=" + amount +
-                ", purchaseData=" + purchaseData +
+                ", purchaseData=" + purchaseDate +
                 ", category=" + category +
                 '}';
     }

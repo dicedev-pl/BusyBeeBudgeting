@@ -1,0 +1,62 @@
+### Create a new user - only if not exist in the database
+POST http://localhost:8080/auth
+Content-Type: application/json
+
+{
+  "username": "gracz",
+  "password": "gracz"
+}
+
+### GET a user token to use this application
+GET http://localhost:8080/auth
+Content-Type: application/json
+
+{
+  "username": "gracz",
+  "password": "gracz"
+}
+
+> {%
+    client.global.set("auth_token", response.body.jwtToken);
+    client.log("Bearer " + response.body.jwtToken);
+%}
+
+### GET all expense for logged user user
+GET http://localhost:8080/expenses
+Authorization: Bearer {{auth_token}}
+
+### POST - save - expense for logged user user
+### możesz zmieniać wartości pól, kategori są w enumie ExpensesCategory
+POST http://localhost:8080/expenses
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+{
+  "amount": "300",
+  "purchaseDate": "2010-02-02T15:00:00.001Z",
+  "category":  "EDUCATION"
+}
+
+### DELETE - usuwanie - expense for logged user user
+### przykładowy request, id jest pokazane gdy wykonasz GET
+### wystarczy przesłanie tylko id usuwanego wydatku
+DELETE http://localhost:8080/expenses
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+{
+  "id": "4effc837-cb91-4fa7-bb4a-db170a044c23"
+}
+
+### PUT - aktualizacja - expense for logged user user
+### przykładowy request, obiekt jest wypisany przy GET
+PUT http://localhost:8080/expenses
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+{
+  "id": "4c158b34-4368-4310-a71c-4c9197054a72",
+  "amount": 300,
+  "purchaseDate": "2010-02-02T15:00:00.001Z",
+  "category": "FUN"
+}
