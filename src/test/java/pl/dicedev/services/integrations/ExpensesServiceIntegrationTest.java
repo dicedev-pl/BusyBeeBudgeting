@@ -2,39 +2,21 @@ package pl.dicedev.services.integrations;
 
 import org.assertj.core.api.AssertionsForClassTypes;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.test.context.support.WithMockUser;
 import pl.dicedev.builders.ExpensesDtoBuilder;
 import pl.dicedev.builders.ExpensesEntityBuilder;
 import pl.dicedev.enums.ExpensesCategory;
-import pl.dicedev.repositories.ExpensesRepository;
-import pl.dicedev.repositories.UserRepository;
 import pl.dicedev.repositories.entities.ExpensesEntity;
 import pl.dicedev.repositories.entities.UserEntity;
-import pl.dicedev.services.ExpensesService;
 import pl.dicedev.services.dtos.ExpensesDto;
 
-import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
-@SpringBootTest
-@Transactional
-@WithMockUser(username = "user123", password = "123user")
-public class ExpensesServiceIntegrationTest {
-
-    @Autowired
-    private ExpensesRepository expensesRepository;
-    @Autowired
-    private ExpensesService expensesService;
-    @Autowired
-    private UserRepository userRepository;
+public class ExpensesServiceIntegrationTest extends InitIntegrationTestData {
 
     @Test
     void shouldSaveOneExpensesInToDatabase() {
@@ -131,14 +113,6 @@ public class ExpensesServiceIntegrationTest {
 
         // then
         assertThat(allExpenses.size()).isEqualTo(2);
-
     }
 
-    private UserEntity initDefaultMockUserInDatabase() {
-        var user = new UserEntity();
-        user.setUsername("user123");
-        user.setPassword("123user");
-
-        return userRepository.save(user);
-    }
 }

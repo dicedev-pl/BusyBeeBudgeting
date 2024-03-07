@@ -23,17 +23,7 @@ import java.util.stream.Collectors;
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
-@SpringBootTest
-@Transactional
-@WithMockUser(username = "user123", password = "123user")
-public class AssetServiceIntegrationTest {
-
-    @Autowired
-    private AssetsRepository assetsRepository;
-    @Autowired
-    private AssetsService service;
-    @Autowired
-    private UserRepository userRepository;
+public class AssetServiceIntegrationTest extends InitIntegrationTestData {
 
     @Test
     void shouldReturnListWithThreeElements() {
@@ -121,14 +111,6 @@ public class AssetServiceIntegrationTest {
 
     }
 
-    private UserEntity initDefaultMockUserInDatabase() {
-        var user = new UserEntity();
-        user.setUsername("user123");
-        user.setPassword("123user");
-
-        return userRepository.save(user);
-    }
-
     private void initDataBaseByDefaultMockUserAndHisAssets() {
         var userEntity = initDefaultMockUserInDatabase();
         AssetEntity entity1 = new AssetEntityBuilder()
@@ -151,14 +133,6 @@ public class AssetServiceIntegrationTest {
                 .build();
 
         assetsRepository.saveAll(asList(entity1, entity2, entity3));
-    }
-
-    private UserEntity initSecondMockUserInDatabase() {
-        var user = new UserEntity();
-        user.setUsername("secondUser123");
-        user.setPassword("123SecondUser");
-
-        return userRepository.save(user);
     }
 
     private void initDataBaseBySecondMockUserAndHisAssets() {
