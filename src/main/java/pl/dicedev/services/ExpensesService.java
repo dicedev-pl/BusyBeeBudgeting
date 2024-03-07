@@ -44,7 +44,8 @@ public class ExpensesService {
     }
 
     public List<ExpensesDto> getAllExpenses() {
-        return expensesRepository.findAllByUser(userLogInfoService.getLoggedUserEntity()).stream()
+        List<ExpensesEntity> a = expensesRepository.findAllByUser(userLogInfoService.getLoggedUserEntity());
+        return a.stream()
                 .map(expensesEntity -> new ExpensesDtoBuilder()
                         .withId(expensesEntity.getId())
                         .withAmount(expensesEntity.getAmount())
