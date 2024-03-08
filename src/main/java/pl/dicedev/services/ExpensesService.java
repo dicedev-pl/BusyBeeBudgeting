@@ -8,6 +8,7 @@ import pl.dicedev.repositories.entities.ExpensesEntity;
 import pl.dicedev.repositories.entities.UserEntity;
 import pl.dicedev.services.dtos.ExpensesDto;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -44,8 +45,8 @@ public class ExpensesService {
     }
 
     public List<ExpensesDto> getAllExpenses() {
-        List<ExpensesEntity> a = expensesRepository.findAllByUser(userLogInfoService.getLoggedUserEntity());
-        return a.stream()
+        List<ExpensesEntity> expensesRepositoryAllByUser = expensesRepository.findAllByUser(userLogInfoService.getLoggedUserEntity());
+        return expensesRepositoryAllByUser.stream()
                 .map(expensesEntity -> new ExpensesDtoBuilder()
                         .withId(expensesEntity.getId())
                         .withAmount(expensesEntity.getAmount())
@@ -53,6 +54,22 @@ public class ExpensesService {
                         .withPurchaseDate(expensesEntity.getPurchaseDate())
                         .build())
                 .collect(Collectors.toList());
+    }
+
+    public List<ExpensesDto> getAllExpensesBetweenDate(String dateFrom, String dateTo) {
+        UserEntity user = userLogInfoService.getLoggedUserEntity();
+        String instantSuffix = "T00:00:00.001Z";
+
+        List<ExpensesEntity> expensesEntities = expensesRepository.findAllByDate(
+                Instant.parse(dateFrom + instantSuffix),
+                Instant.parse(dateTo + instantSuffix),
+                user);
+
+        List<ExpensesDto> expensesDtos = expensesEntities.stream()
+                .map(expensesEntity -> expensesMapper.fromEntityToDto(expensesEntity))
+                .collect(Collectors.toList());
+
+        return expensesDtos;
     }
 
     public void deleteExpenses(ExpensesDto expensesDto) {

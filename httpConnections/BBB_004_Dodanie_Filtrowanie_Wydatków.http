@@ -1,0 +1,43 @@
+### Create a new user - only if not exist in the database
+POST http://localhost:8080/auth
+Content-Type: application/json
+
+{
+  "username": "gracz",
+  "password": "gracz"
+}
+
+### GET a user token to use this application
+GET http://localhost:8080/auth
+Content-Type: application/json
+
+{
+  "username": "gracz",
+  "password": "gracz"
+}
+
+> {%
+    client.global.set("auth_token", response.body.jwtToken);
+    client.log("Bearer " + response.body.jwtToken);
+%}
+
+
+### POST - save - expense for logged user user
+### możesz zmieniać wartości pól, kategori są w enumie ExpensesCategory
+POST http://localhost:8080/expenses
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+{
+  "amount": "300",
+  "purchaseDate": "2010-04-04T15:00:00.001Z",
+  "category":  "EDUCATION"
+}
+
+### GET all expense for logged user user
+GET http://localhost:8080/expenses
+Authorization: Bearer {{auth_token}}
+
+### GET all expense for logged user user
+GET http://localhost:8080/expenses/filter?from=2010-04-01&to=2010-04-03
+Authorization: Bearer {{auth_token}}

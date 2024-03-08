@@ -3,15 +3,20 @@ package pl.dicedev.services.integrations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.context.support.WithMockUser;
+import pl.dicedev.builders.ExpensesEntityBuilder;
 import pl.dicedev.repositories.AssetsRepository;
 import pl.dicedev.repositories.ExpensesRepository;
 import pl.dicedev.repositories.UserRepository;
+import pl.dicedev.repositories.entities.ExpensesEntity;
 import pl.dicedev.repositories.entities.UserEntity;
 import pl.dicedev.services.AssetsService;
 import pl.dicedev.services.ExpensesService;
 import pl.dicedev.services.UserDetailsServiceImpl;
 
 import javax.transaction.Transactional;
+import java.math.BigDecimal;
+import java.time.Instant;
+import java.util.UUID;
 
 @SpringBootTest
 @Transactional
@@ -51,6 +56,19 @@ public abstract class InitIntegrationTestData {
         user.setPassword(USER_PASSWORD_SECOND);
 
         return userRepository.save(user);
+    }
+
+    protected UUID initDatabaseByExpenses(UserEntity user, String date) {
+        String instantSuffix = "T00:00:00.001Z";
+
+        ExpensesEntity expensesEntity = new ExpensesEntityBuilder()
+                .withAmount(BigDecimal.ONE)
+                .withUser(user)
+                .withPurchaseDate(Instant.parse(date+instantSuffix))
+                .build();
+
+        ExpensesEntity savedEntity = expensesRepository.save(expensesEntity);
+        return savedEntity.getId();
     }
 
 }
