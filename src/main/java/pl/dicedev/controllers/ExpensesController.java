@@ -5,6 +5,7 @@ import pl.dicedev.services.ExpensesService;
 import pl.dicedev.services.dtos.ExpensesDto;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -24,10 +25,8 @@ public class ExpensesController {
 
     @GetMapping("filter")
     public List<ExpensesDto> getAllExpenses(
-            @RequestParam String from,
-            @RequestParam String to
-    ) {
-        return expensesService.getAllExpensesBetweenDate(from, to);
+            @RequestParam Map<String, String> filters) {
+        return expensesService.getFilteredExpenses(filters);
     }
 
     @PostMapping

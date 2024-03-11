@@ -2,6 +2,8 @@ package pl.dicedev.services;
 
 import org.springframework.stereotype.Service;
 import pl.dicedev.builders.ExpensesDtoBuilder;
+import pl.dicedev.enums.FilterExpensesParametersEnum;
+import pl.dicedev.enums.MonthsEnum;
 import pl.dicedev.mappers.ExpensesMapper;
 import pl.dicedev.repositories.ExpensesRepository;
 import pl.dicedev.repositories.entities.ExpensesEntity;
@@ -9,9 +11,7 @@ import pl.dicedev.repositories.entities.UserEntity;
 import pl.dicedev.services.dtos.ExpensesDto;
 
 import java.time.Instant;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -56,7 +56,28 @@ public class ExpensesService {
                 .collect(Collectors.toList());
     }
 
-    public List<ExpensesDto> getAllExpensesBetweenDate(String dateFrom, String dateTo) {
+    public List<ExpensesDto> getFilteredExpenses(Map<String, String> filters) {
+        if (filters.containsKey(FilterExpensesParametersEnum.DATE_TO.getKey())) {
+            String dateFrom = filters.get(FilterExpensesParametersEnum.DATE_FORM.getKey());
+            String dateTo = filters.get(FilterExpensesParametersEnum.DATE_TO.getKey());
+
+            return getAllExpensesBetweenDate(dateFrom, dateTo);
+        } else if (filters.containsKey(FilterExpensesParametersEnum.YEAR.getKey())) {
+            String year = filters.get(FilterExpensesParametersEnum.YEAR.getKey());
+            String month = filters.get(FilterExpensesParametersEnum.MONTH.getKey());
+
+            return getAllExpensesForMonthInYear(year, month);
+        }
+        return Collections.emptyList();
+    }
+
+    private List<ExpensesDto> getAllExpensesForMonthInYear(String year, String month) {
+        String dateFrom = MonthsEnum.valueOf(month.toUpperCase()).getFirstDayForYear(year);
+        String dateTo = MonthsEnum.valueOf(month.toUpperCase()).getLastDayForYear(year);
+        return getAllExpensesBetweenDate(dateFrom, dateTo);
+    }
+
+    private List<ExpensesDto> getAllExpensesBetweenDate(String dateFrom, String dateTo) {
         UserEntity user = userLogInfoService.getLoggedUserEntity();
         String instantSuffix = "T00:00:00.001Z";
 

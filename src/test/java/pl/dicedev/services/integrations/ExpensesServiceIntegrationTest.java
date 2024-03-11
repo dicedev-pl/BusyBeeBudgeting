@@ -5,13 +5,16 @@ import org.junit.jupiter.api.Test;
 import pl.dicedev.builders.ExpensesDtoBuilder;
 import pl.dicedev.builders.ExpensesEntityBuilder;
 import pl.dicedev.enums.ExpensesCategory;
+import pl.dicedev.enums.FilterExpensesParametersEnum;
 import pl.dicedev.repositories.entities.ExpensesEntity;
 import pl.dicedev.repositories.entities.UserEntity;
 import pl.dicedev.services.dtos.ExpensesDto;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -117,7 +120,7 @@ public class ExpensesServiceIntegrationTest extends InitIntegrationTestData {
     }
 
     @Test
-    void shouldReturnAllExpensesSavedInDatabaseAfter() {
+    void shouldReturnAllExpensesSavedInDatabaseFilterDateFrom_To() {
         // given
         var fromDate = "2021-01-04";
         var toDate = "2021-01-10";
@@ -128,9 +131,42 @@ public class ExpensesServiceIntegrationTest extends InitIntegrationTestData {
         initDatabaseByExpenses(user, toDate);
         initDatabaseByExpenses(user, middleDate);
         initDatabaseByExpenses(user, notInRangeDate);
+        Map<String, String> filters = new HashMap<>();
+        filters.put(FilterExpensesParametersEnum.DATE_FORM.getKey(), fromDate);
+        filters.put(FilterExpensesParametersEnum.DATE_TO.getKey(), toDate);
 
         // when
-        var result = expensesService.getAllExpensesBetweenDate(fromDate, toDate);
+        var result = expensesService.getFilteredExpenses(filters);
+
+        // then
+        assertThat(result).hasSize(3);
+        var dateAsString = result.stream()
+                .map(dto -> dto.getPurchaseDate().toString().substring(0, fromDate.length()))
+                .collect(Collectors.toSet());
+        assertThat(dateAsString)
+                .contains(fromDate, toDate, middleDate)
+                .doesNotContain(notInRangeDate);
+
+    }
+
+    @Test
+    void shouldReturnAllExpensesSavedInDatabaseFilterYear_Month() {
+        // given
+        var fromDate = "2021-01-04";
+        var toDate = "2021-01-10";
+        var middleDate = "2021-01-08";
+        var notInRangeDate = "2021-03-11";
+        var user = initDefaultMockUserInDatabase();
+        initDatabaseByExpenses(user, fromDate);
+        initDatabaseByExpenses(user, toDate);
+        initDatabaseByExpenses(user, middleDate);
+        initDatabaseByExpenses(user, notInRangeDate);
+        Map<String, String> filters = new HashMap<>();
+        filters.put(FilterExpensesParametersEnum.MONTH.getKey(), "january");
+        filters.put(FilterExpensesParametersEnum.YEAR.getKey(), "2021");
+
+        // when
+        var result = expensesService.getFilteredExpenses(filters);
 
         // then
         assertThat(result).hasSize(3);
