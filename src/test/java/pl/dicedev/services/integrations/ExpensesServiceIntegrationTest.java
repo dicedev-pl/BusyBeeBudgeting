@@ -1,11 +1,16 @@
 package pl.dicedev.services.integrations;
 
 import org.assertj.core.api.AssertionsForClassTypes;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import pl.dicedev.builders.ExpensesDtoBuilder;
 import pl.dicedev.builders.ExpensesEntityBuilder;
 import pl.dicedev.enums.ExpensesCategory;
+import pl.dicedev.enums.ExpensesExceptionErrorMessages;
 import pl.dicedev.enums.FilterExpensesParametersEnum;
+import pl.dicedev.excetpions.MissingExpensesFilterException;
 import pl.dicedev.repositories.entities.ExpensesEntity;
 import pl.dicedev.repositories.entities.UserEntity;
 import pl.dicedev.services.dtos.ExpensesDto;
@@ -19,6 +24,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class ExpensesServiceIntegrationTest extends InitIntegrationTestData {
 
@@ -179,4 +185,25 @@ public class ExpensesServiceIntegrationTest extends InitIntegrationTestData {
 
     }
 
+    @ParameterizedTest(name = "missing filter key: {0} test ")
+    @CsvSource({
+            "month, year",
+            "year, month",
+            "date from, date_to",
+            "date to, date_form"
+    })
+    void shouldThrowExceptionWhenOneOfTheFilterKeyIsMissing(String missingKey, String keyInFilter) {
+        // given
+        String expectedErrorMessage = ExpensesExceptionErrorMessages.MISSING_FILTER_KEY.getMessage() + " " + missingKey;
+        String filterKey = FilterExpensesParametersEnum.valueOf(keyInFilter.toUpperCase()).getKey();
+        Map<String, String> filters = new HashMap<>();
+        filters.put(filterKey, "fake value");
+
+        // when
+        var result = assertThrows(MissingExpensesFilterException.class,
+                () -> expensesService.getFilteredExpenses(filters));
+
+        // then
+        assertThat(result.getMessage()).isEqualTo(expectedErrorMessage);
+    }
 }
