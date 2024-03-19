@@ -4,8 +4,9 @@ import org.springframework.stereotype.Service;
 import pl.dicedev.builders.ExpensesDtoBuilder;
 import pl.dicedev.enums.FilterExpensesParametersEnum;
 import pl.dicedev.enums.MonthsEnum;
-import pl.dicedev.filters.ExpensesFilterParametersValidator;
+import pl.dicedev.filters.ExpensesFilterRange;
 import pl.dicedev.filters.FilterParametersValidator;
+import pl.dicedev.filters.FilterRange;
 import pl.dicedev.mappers.ExpensesMapper;
 import pl.dicedev.repositories.ExpensesRepository;
 import pl.dicedev.repositories.entities.ExpensesEntity;
@@ -23,15 +24,19 @@ public class ExpensesService {
     private final ExpensesRepository expensesRepository;
     private final UserLogInfoService userLogInfoService;
     private final FilterParametersValidator filterParametersValidator;
+    private final FilterRange expensesfilterRange;
 
-    public ExpensesService(ExpensesMapper expensesMapper,
-                           ExpensesRepository expensesRepository,
-                           UserLogInfoService userLogInfoService,
-                           ExpensesFilterParametersValidator filterParametersValidator) {
+    public ExpensesService(
+            ExpensesMapper expensesMapper,
+            ExpensesRepository expensesRepository,
+            UserLogInfoService userLogInfoService,
+            FilterParametersValidator filterParametersValidator,
+            ExpensesFilterRange expensesfilterRange) {
         this.expensesMapper = expensesMapper;
         this.expensesRepository = expensesRepository;
         this.userLogInfoService = userLogInfoService;
         this.filterParametersValidator = filterParametersValidator;
+        this.expensesfilterRange = expensesfilterRange;
     }
 
     public void updateExpenses(ExpensesDto expensesDto) {
@@ -57,36 +62,11 @@ public class ExpensesService {
     }
 
     public List<ExpensesDto> getFilteredExpenses(Map<String, String> filters) {
-        filterParametersValidator.assertFilter(filters);
-        if (filters.containsKey(FilterExpensesParametersEnum.DATE_TO.getKey())) {
-            String dateFrom = filters.get(FilterExpensesParametersEnum.DATE_FORM.getKey());
-            String dateTo = filters.get(FilterExpensesParametersEnum.DATE_TO.getKey());
-
-            return getAllExpensesBetweenDate(dateFrom, dateTo);
-        } else if (filters.containsKey(FilterExpensesParametersEnum.YEAR.getKey())) {
-            String year = filters.get(FilterExpensesParametersEnum.YEAR.getKey());
-            String month = filters.get(FilterExpensesParametersEnum.MONTH.getKey());
-
-            return getAllExpensesForMonthInYear(year, month);
-        }
-        return Collections.emptyList();
-    }
-
-    private List<ExpensesDto> getAllExpensesForMonthInYear(String year, String month) {
-        String dateFrom = MonthsEnum.valueOf(month.toUpperCase()).getFirstDayForYear(year);
-        String dateTo = MonthsEnum.valueOf(month.toUpperCase()).getLastDayForYear(year);
-        return getAllExpensesBetweenDate(dateFrom, dateTo);
-    }
-
-    private List<ExpensesDto> getAllExpensesBetweenDate(String dateFrom, String dateTo) {
         UserEntity user = userLogInfoService.getLoggedUserEntity();
-        String instantSuffix = "T00:00:00.001Z";
-
-        List<ExpensesEntity> expensesEntities = expensesRepository.findAllByDate(Instant.parse(dateFrom + instantSuffix), Instant.parse(dateTo + instantSuffix), user);
-
-        List<ExpensesDto> expensesDtos = expensesEntities.stream().map(expensesEntity -> expensesMapper.fromEntityToDto(expensesEntity)).collect(Collectors.toList());
-
-        return expensesDtos;
+        filterParametersValidator.assertFilter(filters);
+        return expensesfilterRange.getAllByFilter(filters, user).stream()
+                .map(expensesMapper::fromEntityToDto)
+                .collect(Collectors.toList());
     }
 
     public void deleteExpenses(ExpensesDto expensesDto) {

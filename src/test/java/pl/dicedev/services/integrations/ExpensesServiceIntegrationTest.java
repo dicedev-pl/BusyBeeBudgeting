@@ -194,6 +194,7 @@ public class ExpensesServiceIntegrationTest extends InitIntegrationTestData {
     })
     void shouldThrowExceptionWhenOneOfTheFilterKeyIsMissing(String missingKey, String keyInFilter) {
         // given
+        initDefaultMockUserInDatabase();
         String expectedErrorMessage = ExpensesExceptionErrorMessages.MISSING_FILTER_KEY.getMessage() + " " + missingKey;
         String filterKey = FilterExpensesParametersEnum.valueOf(keyInFilter.toUpperCase()).getKey();
         Map<String, String> filters = new HashMap<>();
