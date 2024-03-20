@@ -1,0 +1,89 @@
+### Create a new user - only if not exist in the database
+POST http://localhost:8080/auth
+Content-Type: application/json
+
+{
+  "username": "gracz",
+  "password": "gracz"
+}
+
+### GET a user token to use this application
+GET http://localhost:8080/auth
+Content-Type: application/json
+
+{
+  "username": "gracz",
+  "password": "gracz"
+}
+
+> {%
+    client.global.set("auth_token", response.body.jwtToken);
+    client.log("Bearer " + response.body.jwtToken);
+%}
+
+### GET all expense for logged user user
+GET http://localhost:8080/assets
+Authorization: Bearer {{auth_token}}
+
+### POST - save - expense for logged user user
+### możesz zmieniać wartości pól, kategori są w enumie ExpensesCategory
+POST http://localhost:8080/assets
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+{
+  "amount": "3000",
+  "incomeDate": "2010-02-03T15:00:00.001Z",
+  "category":  "SALARY"
+}
+
+### DELETE - usuwanie - expense for logged user user
+### przykładowy request, id jest pokazane gdy wykonasz GET
+### wystarczy przesłanie tylko id usuwanego wydatku
+DELETE http://localhost:8080/assets
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+{
+  "id": "4effc837-cb91-4fa7-bb4a-db170a044c23"
+}
+
+### PUT - aktualizacja - expense for logged user user
+### przykładowy request, obiekt jest wypisany przy GET
+PUT http://localhost:8080/assets
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+{
+  "id": "4c158b34-4368-4310-a71c-4c9197054a72",
+  "amount": "3000",
+  "incomeDate": "2010-02-03T15:00:00.001Z",
+  "category":  "SALARY"
+}
+
+
+### GET all expense for logged user user
+### You will get all expenses between date
+GET http://localhost:8080/assets/filter?from=2010-02-01&to=2010-02-03
+Authorization: Bearer {{auth_token}}
+
+
+### GET Error 500 Internal Server Error
+### but in the Application logs you will see 'pl.dicedev.excetpions.MissingExpensesFilterException: missing filter key month'
+GET http://localhost:8080/assets/filter?year=2000
+Authorization: Bearer {{auth_token}}
+
+### GET Error 500 Internal Server Error
+### but in the Application logs you will see 'pl.dicedev.excetpions.MissingExpensesFilterException: missing filter key year'
+GET http://localhost:8080/assets/filter?month=may
+Authorization: Bearer {{auth_token}}
+
+### GET Error 500 Internal Server Error
+### but in the Application logs you will see 'pl.dicedev.excetpions.MissingExpensesFilterException: missing filter key date from'
+GET http://localhost:8080/assets/filter?to=2010-04-03
+Authorization: Bearer {{auth_token}}
+
+### GET Error 500 Internal Server Error
+### but in the Application logs you will see 'pl.dicedev.excetpions.MissingExpensesFilterException: missing filter key date to'
+GET http://localhost:8080/assets/filter?from=2010-04-01
+Authorization: Bearer {{auth_token}}

@@ -4,9 +4,11 @@ import pl.dicedev.enums.AssetCategory;
 import pl.dicedev.services.AssetsService;
 import pl.dicedev.services.dtos.AssetDto;
 import org.springframework.web.bind.annotation.*;
+import pl.dicedev.services.dtos.ExpensesDto;
 
 import javax.websocket.server.PathParam;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/assets")
@@ -21,6 +23,12 @@ public class AssetsController {
     @GetMapping
     public List<AssetDto> getAssets() {
         return assetsService.getAllAssets();
+    }
+
+    @GetMapping("filter")
+    public List<AssetDto> getAllExpenses(
+            @RequestParam Map<String, String> filters) {
+        return assetsService.getFilteredAssets(filters);
     }
 
     @PostMapping

@@ -4,6 +4,7 @@ import pl.dicedev.builders.AssetDtoBuilder;
 import pl.dicedev.builders.AssetEntityBuilder;
 import pl.dicedev.enums.ValidatorsAssetEnum;
 import pl.dicedev.excetpions.AssetIncompleteException;
+import pl.dicedev.filters.AssetsFilterRange;
 import pl.dicedev.mappers.AssetsMapper;
 import pl.dicedev.repositories.AssetsRepository;
 import pl.dicedev.repositories.entities.AssetEntity;
@@ -35,6 +36,8 @@ class AssetsServiceTest {
     private AssetsRepository assetsRepository;
     @Mock
     private UserLogInfoService userLogInfoService;
+    @Mock
+    private AssetsFilterRange assetsFilterRange;
 
     private final AssetValidator assetValidator = new AssetValidator();
     private final AssetsMapper assetsMapper = new AssetsMapper();
@@ -46,7 +49,8 @@ class AssetsServiceTest {
         service = new AssetsService(assetsRepository,
                 assetsMapper,
                 assetValidator,
-                userLogInfoService);
+                userLogInfoService,
+                assetsFilterRange);
     }
 
     @Test

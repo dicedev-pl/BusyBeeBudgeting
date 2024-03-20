@@ -9,7 +9,7 @@ import java.time.Instant;
 import java.util.List;
 
 @Component
-public class ExpensesFilterRange extends FilterRange {
+public class ExpensesFilterRange extends FilterRange<ExpensesEntity> {
 
     private final ExpensesRepository expensesRepository;
 
