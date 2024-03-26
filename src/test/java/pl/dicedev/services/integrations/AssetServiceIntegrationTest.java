@@ -1,23 +1,19 @@
 package pl.dicedev.services.integrations;
 
+import org.assertj.core.util.Streams;
+import org.junit.jupiter.api.Test;
 import pl.dicedev.builders.AssetDtoBuilder;
 import pl.dicedev.builders.AssetEntityBuilder;
 import pl.dicedev.enums.AssetCategory;
-import pl.dicedev.repositories.AssetsRepository;
-import pl.dicedev.repositories.UserRepository;
+import pl.dicedev.enums.FilterParametersCalendarEnum;
 import pl.dicedev.repositories.entities.AssetEntity;
 import pl.dicedev.repositories.entities.UserEntity;
-import pl.dicedev.services.AssetsService;
 import pl.dicedev.services.dtos.AssetDto;
-import org.assertj.core.util.Streams;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.test.context.support.WithMockUser;
 
-import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static java.util.Arrays.asList;
@@ -32,7 +28,7 @@ public class AssetServiceIntegrationTest extends InitIntegrationTestData {
         initDataBaseBySecondMockUserAndHisAssets();
 
         // when
-        var allAssetsInDB = service.getAllAssets();
+        var allAssetsInDB = assetsService.getAllAssets();
 
         // then
         assertThat(allAssetsInDB).hasSize(3);
@@ -50,7 +46,7 @@ public class AssetServiceIntegrationTest extends InitIntegrationTestData {
                 .build();
 
         // when
-        service.setAsset(dto);
+        assetsService.setAsset(dto);
 
         // then
         var allAssetInDB = assetsRepository.findAll();
@@ -69,7 +65,7 @@ public class AssetServiceIntegrationTest extends InitIntegrationTestData {
         var category = AssetCategory.OTHER;
 
         // when
-        var allAssetsWithOneCategory = service.getAssetsByCategory(category);
+        var allAssetsWithOneCategory = assetsService.getAssetsByCategory(category);
 
         // then
         assertThat(allAssetsWithOneCategory).hasSize(1);
@@ -96,7 +92,7 @@ public class AssetServiceIntegrationTest extends InitIntegrationTestData {
         assertThat(allAssetsInDatabase).hasSize(numberOfAllAssets);
 
         // when
-        service.deleteAssetByUser(userEntity);
+        assetsService.deleteAssetByUser(userEntity);
 
         // then
         var assetsAfterDelete = assetsRepository.findAll();
@@ -108,6 +104,67 @@ public class AssetServiceIntegrationTest extends InitIntegrationTestData {
                 .collect(Collectors.toSet());
         assertThat(assetsUserId).hasSize(1)
                 .containsExactly(userToLeaveAssets.getId());
+
+    }
+
+
+    @Test
+    void shouldGetAllAssetsByFilterByDateFromAndTo() {
+        // given
+        var fromDate = "2021-01-04";
+        var toDate = "2021-01-10";
+        var middleDate = "2021-01-08";
+        var notInRangeDate = "2021-01-11";
+        var user = initDefaultMockUserInDatabase();
+        initDatabaseByAssets(user, fromDate);
+        initDatabaseByAssets(user, toDate);
+        initDatabaseByAssets(user, middleDate);
+        initDatabaseByAssets(user, notInRangeDate);
+        Map<String, String> filters = new HashMap<>();
+        filters.put(FilterParametersCalendarEnum.DATE_FORM.getKey(), fromDate);
+        filters.put(FilterParametersCalendarEnum.DATE_TO.getKey(), toDate);
+
+        // when
+        var result = assetsService.getFilteredAssets(filters);
+
+        // then
+        assertThat(result).hasSize(3);
+        var dateAsString = result.stream()
+                .map(dto -> dto.getIncomeDate().toString().substring(0, fromDate.length()))
+                .collect(Collectors.toSet());
+        assertThat(dateAsString)
+                .contains(fromDate, toDate, middleDate)
+                .doesNotContain(notInRangeDate);
+
+    }
+
+    @Test
+    void shouldReturnAllExpensesSavedInDatabaseFilterYear_Month() {
+        // given
+        var fromDate = "2021-01-04";
+        var toDate = "2021-01-10";
+        var middleDate = "2021-01-08";
+        var notInRangeDate = "2021-03-11";
+        var user = initDefaultMockUserInDatabase();
+        initDatabaseByAssets(user, fromDate);
+        initDatabaseByAssets(user, toDate);
+        initDatabaseByAssets(user, middleDate);
+        initDatabaseByAssets(user, notInRangeDate);
+        Map<String, String> filters = new HashMap<>();
+        filters.put(FilterParametersCalendarEnum.MONTH.getKey(), "january");
+        filters.put(FilterParametersCalendarEnum.YEAR.getKey(), "2021");
+
+        // when
+        var result = assetsService.getFilteredAssets(filters);
+
+        // then
+        assertThat(result).hasSize(3);
+        var dateAsString = result.stream()
+                .map(dto -> dto.getIncomeDate().toString().substring(0, fromDate.length()))
+                .collect(Collectors.toSet());
+        assertThat(dateAsString)
+                .contains(fromDate, toDate, middleDate)
+                .doesNotContain(notInRangeDate);
 
     }
 

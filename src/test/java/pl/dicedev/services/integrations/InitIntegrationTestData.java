@@ -3,10 +3,13 @@ package pl.dicedev.services.integrations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.context.support.WithMockUser;
+import pl.dicedev.builders.AssetEntityBuilder;
 import pl.dicedev.builders.ExpensesEntityBuilder;
+import pl.dicedev.enums.AssetCategory;
 import pl.dicedev.repositories.AssetsRepository;
 import pl.dicedev.repositories.ExpensesRepository;
 import pl.dicedev.repositories.UserRepository;
+import pl.dicedev.repositories.entities.AssetEntity;
 import pl.dicedev.repositories.entities.ExpensesEntity;
 import pl.dicedev.repositories.entities.UserEntity;
 import pl.dicedev.services.AssetsService;
@@ -32,7 +35,7 @@ public abstract class InitIntegrationTestData {
     @Autowired
     protected AssetsRepository assetsRepository;
     @Autowired
-    protected AssetsService service;
+    protected AssetsService assetsService;
     @Autowired
     protected UserRepository userRepository;
 
@@ -58,17 +61,37 @@ public abstract class InitIntegrationTestData {
         return userRepository.save(user);
     }
 
+    protected UUID initDatabaseByAssets(UserEntity user) {
+        return initDatabaseByAssets(user, Instant.now());
+    }
+
+    protected UUID initDatabaseByAssets(UserEntity user, String date) {
+        String instantSuffix = "T00:00:00.001Z";
+        return initDatabaseByAssets(user, Instant.parse(date + instantSuffix));
+    }
+
     protected UUID initDatabaseByExpenses(UserEntity user, String date) {
         String instantSuffix = "T00:00:00.001Z";
 
         ExpensesEntity expensesEntity = new ExpensesEntityBuilder()
                 .withAmount(BigDecimal.ONE)
                 .withUser(user)
-                .withPurchaseDate(Instant.parse(date+instantSuffix))
+                .withPurchaseDate(Instant.parse(date + instantSuffix))
                 .build();
 
         ExpensesEntity savedEntity = expensesRepository.save(expensesEntity);
         return savedEntity.getId();
     }
 
+    private UUID initDatabaseByAssets(UserEntity user, Instant date) {
+        AssetEntity entity = new AssetEntityBuilder()
+                .withAmount(new BigDecimal(1))
+                .withIncomeDate(date)
+                .withCategory(AssetCategory.OTHER)
+                .withUser(user)
+                .build();
+
+        AssetEntity assetEntity = assetsRepository.save(entity);
+        return assetEntity.getId();
+    }
 }

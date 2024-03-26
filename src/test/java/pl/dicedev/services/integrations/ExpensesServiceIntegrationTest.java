@@ -1,7 +1,6 @@
 package pl.dicedev.services.integrations;
 
 import org.assertj.core.api.AssertionsForClassTypes;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -9,7 +8,7 @@ import pl.dicedev.builders.ExpensesDtoBuilder;
 import pl.dicedev.builders.ExpensesEntityBuilder;
 import pl.dicedev.enums.ExpensesCategory;
 import pl.dicedev.enums.ExpensesExceptionErrorMessages;
-import pl.dicedev.enums.FilterExpensesParametersEnum;
+import pl.dicedev.enums.FilterParametersCalendarEnum;
 import pl.dicedev.excetpions.MissingExpensesFilterException;
 import pl.dicedev.repositories.entities.ExpensesEntity;
 import pl.dicedev.repositories.entities.UserEntity;
@@ -138,8 +137,8 @@ public class ExpensesServiceIntegrationTest extends InitIntegrationTestData {
         initDatabaseByExpenses(user, middleDate);
         initDatabaseByExpenses(user, notInRangeDate);
         Map<String, String> filters = new HashMap<>();
-        filters.put(FilterExpensesParametersEnum.DATE_FORM.getKey(), fromDate);
-        filters.put(FilterExpensesParametersEnum.DATE_TO.getKey(), toDate);
+        filters.put(FilterParametersCalendarEnum.DATE_FORM.getKey(), fromDate);
+        filters.put(FilterParametersCalendarEnum.DATE_TO.getKey(), toDate);
 
         // when
         var result = expensesService.getFilteredExpenses(filters);
@@ -168,8 +167,8 @@ public class ExpensesServiceIntegrationTest extends InitIntegrationTestData {
         initDatabaseByExpenses(user, middleDate);
         initDatabaseByExpenses(user, notInRangeDate);
         Map<String, String> filters = new HashMap<>();
-        filters.put(FilterExpensesParametersEnum.MONTH.getKey(), "january");
-        filters.put(FilterExpensesParametersEnum.YEAR.getKey(), "2021");
+        filters.put(FilterParametersCalendarEnum.MONTH.getKey(), "january");
+        filters.put(FilterParametersCalendarEnum.YEAR.getKey(), "2021");
 
         // when
         var result = expensesService.getFilteredExpenses(filters);
@@ -196,7 +195,7 @@ public class ExpensesServiceIntegrationTest extends InitIntegrationTestData {
         // given
         initDefaultMockUserInDatabase();
         String expectedErrorMessage = ExpensesExceptionErrorMessages.MISSING_FILTER_KEY.getMessage() + " " + missingKey;
-        String filterKey = FilterExpensesParametersEnum.valueOf(keyInFilter.toUpperCase()).getKey();
+        String filterKey = FilterParametersCalendarEnum.valueOf(keyInFilter.toUpperCase()).getKey();
         Map<String, String> filters = new HashMap<>();
         filters.put(filterKey, "fake value");
 

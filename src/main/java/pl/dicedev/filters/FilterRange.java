@@ -1,6 +1,6 @@
 package pl.dicedev.filters;
 
-import pl.dicedev.enums.FilterExpensesParametersEnum;
+import pl.dicedev.enums.FilterParametersCalendarEnum;
 import pl.dicedev.enums.MonthsEnum;
 import pl.dicedev.repositories.entities.UserEntity;
 
@@ -12,14 +12,14 @@ import java.util.Map;
 public abstract class FilterRange<T> {
 
     public List<T> getAllByFilter(Map<String, String> filters, UserEntity user) {
-        if (filters.containsKey(FilterExpensesParametersEnum.DATE_TO.getKey())) {
-            String dateFrom = filters.get(FilterExpensesParametersEnum.DATE_FORM.getKey());
-            String dateTo = filters.get(FilterExpensesParametersEnum.DATE_TO.getKey());
+        if (filters.containsKey(FilterParametersCalendarEnum.DATE_TO.getKey())) {
+            String dateFrom = filters.get(FilterParametersCalendarEnum.DATE_FORM.getKey());
+            String dateTo = filters.get(FilterParametersCalendarEnum.DATE_TO.getKey());
 
             return getAllExpensesBetweenDate(dateFrom, dateTo, user);
-        } else if (filters.containsKey(FilterExpensesParametersEnum.YEAR.getKey())) {
-            String year = filters.get(FilterExpensesParametersEnum.YEAR.getKey());
-            String month = filters.get(FilterExpensesParametersEnum.MONTH.getKey());
+        } else if (filters.containsKey(FilterParametersCalendarEnum.YEAR.getKey())) {
+            String year = filters.get(FilterParametersCalendarEnum.YEAR.getKey());
+            String month = filters.get(FilterParametersCalendarEnum.MONTH.getKey());
 
             return getAllExpensesForMonthInYear(year, month, user);
         }

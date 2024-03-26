@@ -1,7 +1,6 @@
 package pl.dicedev.filters;
 
-import pl.dicedev.enums.FilterExpensesParametersEnum;
-import pl.dicedev.excetpions.MissingExpensesFilterException;
+import pl.dicedev.enums.FilterParametersCalendarEnum;
 
 import java.util.Map;
 
@@ -21,28 +20,28 @@ public abstract class FilterParametersValidator {
     }
 
     private static boolean containsYearAndMonth(Map<String, String> filters) {
-        return filters.containsKey(FilterExpensesParametersEnum.MONTH.getKey()) && filters.containsKey(FilterExpensesParametersEnum.YEAR.getKey());
+        return filters.containsKey(FilterParametersCalendarEnum.MONTH.getKey()) && filters.containsKey(FilterParametersCalendarEnum.YEAR.getKey());
     }
 
     private static boolean containsDateFormAndTo(Map<String, String> filters) {
-        return filters.containsKey(FilterExpensesParametersEnum.DATE_FORM.getKey()) && filters.containsKey(FilterExpensesParametersEnum.DATE_TO.getKey());
+        return filters.containsKey(FilterParametersCalendarEnum.DATE_FORM.getKey()) && filters.containsKey(FilterParametersCalendarEnum.DATE_TO.getKey());
     }
 
 
     private static boolean containsYearAndNotMonth(Map<String, String> filters) {
-        return !filters.containsKey(FilterExpensesParametersEnum.MONTH.getKey()) && filters.containsKey(FilterExpensesParametersEnum.YEAR.getKey());
+        return !filters.containsKey(FilterParametersCalendarEnum.MONTH.getKey()) && filters.containsKey(FilterParametersCalendarEnum.YEAR.getKey());
     }
 
     private static boolean containsMonthAndNotYear(Map<String, String> filters) {
-        return filters.containsKey(FilterExpensesParametersEnum.MONTH.getKey()) && !filters.containsKey(FilterExpensesParametersEnum.YEAR.getKey());
+        return filters.containsKey(FilterParametersCalendarEnum.MONTH.getKey()) && !filters.containsKey(FilterParametersCalendarEnum.YEAR.getKey());
     }
 
     private static boolean containsDateFromAndNotTo(Map<String, String> filters) {
-        return filters.containsKey(FilterExpensesParametersEnum.DATE_FORM.getKey()) && !filters.containsKey(FilterExpensesParametersEnum.DATE_TO.getKey());
+        return filters.containsKey(FilterParametersCalendarEnum.DATE_FORM.getKey()) && !filters.containsKey(FilterParametersCalendarEnum.DATE_TO.getKey());
     }
 
     private static boolean containsDateToAndNotFrom(Map<String, String> filters) {
-        return !filters.containsKey(FilterExpensesParametersEnum.DATE_FORM.getKey()) && filters.containsKey(FilterExpensesParametersEnum.DATE_TO.getKey());
+        return !filters.containsKey(FilterParametersCalendarEnum.DATE_FORM.getKey()) && filters.containsKey(FilterParametersCalendarEnum.DATE_TO.getKey());
     }
 
 
