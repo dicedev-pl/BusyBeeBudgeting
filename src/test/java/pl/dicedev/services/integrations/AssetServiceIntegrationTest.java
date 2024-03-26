@@ -1,11 +1,16 @@
 package pl.dicedev.services.integrations;
 
+import org.assertj.core.api.AssertionsForClassTypes;
 import org.assertj.core.util.Streams;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import pl.dicedev.builders.AssetDtoBuilder;
 import pl.dicedev.builders.AssetEntityBuilder;
 import pl.dicedev.enums.AssetCategory;
+import pl.dicedev.enums.FilterExceptionErrorMessages;
 import pl.dicedev.enums.FilterParametersCalendarEnum;
+import pl.dicedev.excetpions.MissingAssetsFilterException;
 import pl.dicedev.repositories.entities.AssetEntity;
 import pl.dicedev.repositories.entities.UserEntity;
 import pl.dicedev.services.dtos.AssetDto;
@@ -18,6 +23,7 @@ import java.util.stream.Collectors;
 
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class AssetServiceIntegrationTest extends InitIntegrationTestData {
 
@@ -139,7 +145,7 @@ public class AssetServiceIntegrationTest extends InitIntegrationTestData {
     }
 
     @Test
-    void shouldReturnAllExpensesSavedInDatabaseFilterYear_Month() {
+    void shouldReturnAllAssetsSavedInDatabaseFilterYear_Month() {
         // given
         var fromDate = "2021-01-04";
         var toDate = "2021-01-10";
@@ -166,6 +172,30 @@ public class AssetServiceIntegrationTest extends InitIntegrationTestData {
                 .contains(fromDate, toDate, middleDate)
                 .doesNotContain(notInRangeDate);
 
+    }
+
+
+    @ParameterizedTest(name = "missing filter key: {0} test ")
+    @CsvSource({
+            "month, year",
+            "year, month",
+            "date from, date_to",
+            "date to, date_form"
+    })
+    void shouldThrowExceptionWhenOneOfTheFilterKeyIsMissing(String missingKey, String keyInFilter) {
+        // given
+        initDefaultMockUserInDatabase();
+        String assetsErrorMessage = FilterExceptionErrorMessages.MISSING_ASSETS_FILTER_KEY.getMessage() + " " + missingKey;
+        String filterKey = FilterParametersCalendarEnum.valueOf(keyInFilter.toUpperCase()).getKey();
+        Map<String, String> filters = new HashMap<>();
+        filters.put(filterKey, "fake value");
+
+        // when
+        var result = assertThrows(MissingAssetsFilterException.class,
+                () -> assetsService.getFilteredAssets(filters));
+
+        // then
+        AssertionsForClassTypes.assertThat(result.getMessage()).isEqualTo(assetsErrorMessage);
     }
 
     private void initDataBaseByDefaultMockUserAndHisAssets() {

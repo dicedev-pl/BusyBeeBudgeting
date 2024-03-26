@@ -1,15 +1,5 @@
 package pl.dicedev.services;
 
-import pl.dicedev.builders.AssetDtoBuilder;
-import pl.dicedev.builders.AssetEntityBuilder;
-import pl.dicedev.enums.ValidatorsAssetEnum;
-import pl.dicedev.excetpions.AssetIncompleteException;
-import pl.dicedev.filters.AssetsFilterRange;
-import pl.dicedev.mappers.AssetsMapper;
-import pl.dicedev.repositories.AssetsRepository;
-import pl.dicedev.repositories.entities.AssetEntity;
-import pl.dicedev.services.dtos.AssetDto;
-import pl.dicedev.validators.AssetValidator;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,6 +7,17 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import pl.dicedev.builders.AssetDtoBuilder;
+import pl.dicedev.builders.AssetEntityBuilder;
+import pl.dicedev.enums.ValidatorsAssetEnum;
+import pl.dicedev.excetpions.AssetIncompleteException;
+import pl.dicedev.filters.AssetsFilterParametersValidator;
+import pl.dicedev.filters.AssetsFilterRange;
+import pl.dicedev.mappers.AssetsMapper;
+import pl.dicedev.repositories.AssetsRepository;
+import pl.dicedev.repositories.entities.AssetEntity;
+import pl.dicedev.services.dtos.AssetDto;
+import pl.dicedev.validators.AssetValidator;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -38,6 +39,8 @@ class AssetsServiceTest {
     private UserLogInfoService userLogInfoService;
     @Mock
     private AssetsFilterRange assetsFilterRange;
+    @Mock
+    private AssetsFilterParametersValidator filterParametersValidator;
 
     private final AssetValidator assetValidator = new AssetValidator();
     private final AssetsMapper assetsMapper = new AssetsMapper();
@@ -49,6 +52,7 @@ class AssetsServiceTest {
         service = new AssetsService(assetsRepository,
                 assetsMapper,
                 assetValidator,
+                filterParametersValidator,
                 userLogInfoService,
                 assetsFilterRange);
     }

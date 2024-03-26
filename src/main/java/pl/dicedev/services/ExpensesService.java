@@ -2,6 +2,7 @@ package pl.dicedev.services;
 
 import org.springframework.stereotype.Service;
 import pl.dicedev.builders.ExpensesDtoBuilder;
+import pl.dicedev.filters.ExpensesFilterParametersValidator;
 import pl.dicedev.filters.ExpensesFilterRange;
 import pl.dicedev.filters.FilterParametersValidator;
 import pl.dicedev.filters.FilterRange;
@@ -30,7 +31,7 @@ public class ExpensesService {
             ExpensesMapper expensesMapper,
             ExpensesRepository expensesRepository,
             UserLogInfoService userLogInfoService,
-            FilterParametersValidator filterParametersValidator,
+            ExpensesFilterParametersValidator filterParametersValidator,
             ExpensesFilterRange expensesFilterRange) {
         this.expensesMapper = expensesMapper;
         this.expensesRepository = expensesRepository;

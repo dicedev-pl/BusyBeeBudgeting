@@ -1,18 +1,19 @@
 package pl.dicedev.services;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 import pl.dicedev.enums.AssetCategory;
+import pl.dicedev.filters.AssetsFilterParametersValidator;
 import pl.dicedev.filters.AssetsFilterRange;
+import pl.dicedev.filters.FilterParametersValidator;
 import pl.dicedev.filters.FilterRange;
 import pl.dicedev.mappers.AssetsMapper;
 import pl.dicedev.repositories.AssetsRepository;
 import pl.dicedev.repositories.entities.AssetEntity;
 import pl.dicedev.repositories.entities.UserEntity;
 import pl.dicedev.services.dtos.AssetDto;
-import pl.dicedev.services.dtos.ExpensesDto;
 import pl.dicedev.validators.AssetValidator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
@@ -26,18 +27,21 @@ public class AssetsService {
     private final AssetsRepository assetsRepository;
     private final AssetsMapper assetsMapper;
     private final AssetValidator assetValidator;
+    private final FilterParametersValidator filterParametersValidator;
     private final UserLogInfoService userLogInfoService;
     private final FilterRange<AssetEntity> assetsFilterRange;
 
     public AssetsService(AssetsRepository assetsRepository,
                          AssetsMapper assetsMapper,
                          AssetValidator assetValidator,
+                         AssetsFilterParametersValidator filterParametersValidator,
                          UserLogInfoService userLogInfoService,
                          AssetsFilterRange assetsFilterRange
     ) {
         this.assetsRepository = assetsRepository;
         this.assetsMapper = assetsMapper;
         this.assetValidator = assetValidator;
+        this.filterParametersValidator = filterParametersValidator;
         this.userLogInfoService = userLogInfoService;
         this.assetsFilterRange = assetsFilterRange;
     }
@@ -96,6 +100,7 @@ public class AssetsService {
 
     public List<AssetDto> getFilteredAssets(Map<String, String> filters) {
         var user = getUserEntity();
+        filterParametersValidator.assertFilter(filters);
         return assetsFilterRange.getAllByFilter(filters, user).stream()
                 .map(assetsMapper::fromEntityToDto)
                 .collect(Collectors.toList());

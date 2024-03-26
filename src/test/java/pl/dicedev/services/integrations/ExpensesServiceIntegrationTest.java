@@ -7,7 +7,7 @@ import org.junit.jupiter.params.provider.CsvSource;
 import pl.dicedev.builders.ExpensesDtoBuilder;
 import pl.dicedev.builders.ExpensesEntityBuilder;
 import pl.dicedev.enums.ExpensesCategory;
-import pl.dicedev.enums.ExpensesExceptionErrorMessages;
+import pl.dicedev.enums.FilterExceptionErrorMessages;
 import pl.dicedev.enums.FilterParametersCalendarEnum;
 import pl.dicedev.excetpions.MissingExpensesFilterException;
 import pl.dicedev.repositories.entities.ExpensesEntity;
@@ -194,7 +194,7 @@ public class ExpensesServiceIntegrationTest extends InitIntegrationTestData {
     void shouldThrowExceptionWhenOneOfTheFilterKeyIsMissing(String missingKey, String keyInFilter) {
         // given
         initDefaultMockUserInDatabase();
-        String expectedErrorMessage = ExpensesExceptionErrorMessages.MISSING_FILTER_KEY.getMessage() + " " + missingKey;
+        String expectedErrorMessage = FilterExceptionErrorMessages.MISSING_EXPENSES_FILTER_KEY.getMessage() + " " + missingKey;
         String filterKey = FilterParametersCalendarEnum.valueOf(keyInFilter.toUpperCase()).getKey();
         Map<String, String> filters = new HashMap<>();
         filters.put(filterKey, "fake value");
