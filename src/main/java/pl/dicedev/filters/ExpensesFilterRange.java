@@ -9,7 +9,7 @@ import pl.dicedev.repositories.entities.UserEntity;
 import java.time.Instant;
 import java.util.List;
 
-@Component
+@Component("forExpensesRange")
 public class ExpensesFilterRange extends FilterRange<ExpensesEntity> {
 
     private final ExpensesRepository expensesRepository;

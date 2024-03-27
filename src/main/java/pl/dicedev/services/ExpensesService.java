@@ -2,8 +2,8 @@ package pl.dicedev.services;
 
 import org.springframework.stereotype.Service;
 import pl.dicedev.builders.ExpensesDtoBuilder;
-import pl.dicedev.filters.ExpensesFilterRange;
-import pl.dicedev.filters.FilterRange;
+import pl.dicedev.enums.FilterSpecification;
+import pl.dicedev.filters.FilterRangeStrategy;
 import pl.dicedev.mappers.ExpensesMapper;
 import pl.dicedev.repositories.ExpensesRepository;
 import pl.dicedev.repositories.entities.ExpensesEntity;
@@ -22,13 +22,13 @@ public class ExpensesService {
     private final ExpensesMapper expensesMapper;
     private final ExpensesRepository expensesRepository;
     private final UserLogInfoService userLogInfoService;
-    private final FilterRange<ExpensesEntity> expensesFilterRange;
+    private final FilterRangeStrategy<ExpensesEntity> expensesFilterRange;
 
     public ExpensesService(
             ExpensesMapper expensesMapper,
             ExpensesRepository expensesRepository,
             UserLogInfoService userLogInfoService,
-            ExpensesFilterRange expensesFilterRange) {
+            FilterRangeStrategy<ExpensesEntity> expensesFilterRange) {
         this.expensesMapper = expensesMapper;
         this.expensesRepository = expensesRepository;
         this.userLogInfoService = userLogInfoService;
@@ -59,7 +59,7 @@ public class ExpensesService {
 
     public List<ExpensesDto> getFilteredExpenses(Map<String, String> filters) {
         UserEntity user = userLogInfoService.getLoggedUserEntity();
-        return expensesFilterRange.getAllByFilter(filters, user).stream()
+        return expensesFilterRange.getFilteredDataForSpecification(user, filters, FilterSpecification.FOR_EXPENSES).stream()
                 .map(expensesMapper::fromEntityToDto)
                 .collect(Collectors.toList());
     }

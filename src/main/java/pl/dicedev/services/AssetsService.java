@@ -4,10 +4,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import pl.dicedev.enums.AssetCategory;
-import pl.dicedev.filters.AssetsFilterParametersValidator;
-import pl.dicedev.filters.AssetsFilterRange;
-import pl.dicedev.filters.FilterParametersValidator;
-import pl.dicedev.filters.FilterRange;
+import pl.dicedev.enums.FilterSpecification;
+import pl.dicedev.filters.FilterRangeStrategy;
 import pl.dicedev.mappers.AssetsMapper;
 import pl.dicedev.repositories.AssetsRepository;
 import pl.dicedev.repositories.entities.AssetEntity;
@@ -28,13 +26,13 @@ public class AssetsService {
     private final AssetsMapper assetsMapper;
     private final AssetValidator assetValidator;
     private final UserLogInfoService userLogInfoService;
-    private final FilterRange<AssetEntity> assetsFilterRange;
+    private final FilterRangeStrategy<AssetEntity> assetsFilterRange;
 
     public AssetsService(AssetsRepository assetsRepository,
                          AssetsMapper assetsMapper,
                          AssetValidator assetValidator,
                          UserLogInfoService userLogInfoService,
-                         AssetsFilterRange assetsFilterRange
+                         FilterRangeStrategy<AssetEntity> assetsFilterRange
     ) {
         this.assetsRepository = assetsRepository;
         this.assetsMapper = assetsMapper;
@@ -97,7 +95,7 @@ public class AssetsService {
 
     public List<AssetDto> getFilteredAssets(Map<String, String> filters) {
         var user = getUserEntity();
-        return assetsFilterRange.getAllByFilter(filters, user).stream()
+        return assetsFilterRange.getFilteredDataForSpecification(user, filters, FilterSpecification.FOR_ASSETS).stream()
                 .map(assetsMapper::fromEntityToDto)
                 .collect(Collectors.toList());
     }

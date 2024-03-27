@@ -16,11 +16,10 @@ public abstract class FilterRange<T> {
     @Autowired
     private FilterStrategy filterStrategy;
 
-    public List<T> getAllByFilter(Map<String, String> filters, UserEntity user) {
-        if (FilterSpecification.FOR_EXPENSES.getValidator().equals(getFilterName()))
-            filterStrategy.checkFilterForSpecification(filters, FilterSpecification.FOR_EXPENSES);
-        if (FilterSpecification.FOR_ASSETS.getValidator().equals(getFilterName()))
-            filterStrategy.checkFilterForSpecification(filters, FilterSpecification.FOR_ASSETS);
+    public List<T> getAllByFilter(Map<String, String> filters,
+                                  UserEntity user,
+                                  FilterSpecification filterSpecification) {
+        filterStrategy.checkFilterForSpecification(filters, filterSpecification);
 
         if (filters.containsKey(FilterParametersCalendarEnum.DATE_TO.getKey())) {
             String dateFrom = filters.get(FilterParametersCalendarEnum.DATE_FORM.getKey());

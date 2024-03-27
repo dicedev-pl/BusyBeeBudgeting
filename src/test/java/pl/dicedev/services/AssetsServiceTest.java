@@ -13,6 +13,7 @@ import pl.dicedev.enums.ValidatorsAssetEnum;
 import pl.dicedev.excetpions.AssetIncompleteException;
 import pl.dicedev.filters.AssetsFilterParametersValidator;
 import pl.dicedev.filters.AssetsFilterRange;
+import pl.dicedev.filters.FilterRangeStrategy;
 import pl.dicedev.mappers.AssetsMapper;
 import pl.dicedev.repositories.AssetsRepository;
 import pl.dicedev.repositories.entities.AssetEntity;
@@ -38,7 +39,7 @@ class AssetsServiceTest {
     @Mock
     private UserLogInfoService userLogInfoService;
     @Mock
-    private AssetsFilterRange assetsFilterRange;
+    private FilterRangeStrategy<AssetEntity> assetsFilterRange;
 
 
     private final AssetValidator assetValidator = new AssetValidator();

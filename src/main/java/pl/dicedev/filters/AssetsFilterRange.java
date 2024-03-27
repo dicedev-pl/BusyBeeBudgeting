@@ -9,7 +9,7 @@ import pl.dicedev.repositories.entities.UserEntity;
 import java.time.Instant;
 import java.util.List;
 
-@Component
+@Component("forAssertRange")
 public class AssetsFilterRange extends FilterRange<AssetEntity> {
 
     private final AssetsRepository assetsRepository;
