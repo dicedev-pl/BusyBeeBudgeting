@@ -27,21 +27,18 @@ public class AssetsService {
     private final AssetsRepository assetsRepository;
     private final AssetsMapper assetsMapper;
     private final AssetValidator assetValidator;
-    private final FilterParametersValidator filterParametersValidator;
     private final UserLogInfoService userLogInfoService;
     private final FilterRange<AssetEntity> assetsFilterRange;
 
     public AssetsService(AssetsRepository assetsRepository,
                          AssetsMapper assetsMapper,
                          AssetValidator assetValidator,
-                         AssetsFilterParametersValidator filterParametersValidator,
                          UserLogInfoService userLogInfoService,
                          AssetsFilterRange assetsFilterRange
     ) {
         this.assetsRepository = assetsRepository;
         this.assetsMapper = assetsMapper;
         this.assetValidator = assetValidator;
-        this.filterParametersValidator = filterParametersValidator;
         this.userLogInfoService = userLogInfoService;
         this.assetsFilterRange = assetsFilterRange;
     }
@@ -100,7 +97,6 @@ public class AssetsService {
 
     public List<AssetDto> getFilteredAssets(Map<String, String> filters) {
         var user = getUserEntity();
-        filterParametersValidator.assertFilter(filters);
         return assetsFilterRange.getAllByFilter(filters, user).stream()
                 .map(assetsMapper::fromEntityToDto)
                 .collect(Collectors.toList());

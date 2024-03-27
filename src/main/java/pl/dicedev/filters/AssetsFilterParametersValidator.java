@@ -3,7 +3,7 @@ package pl.dicedev.filters;
 import org.springframework.stereotype.Component;
 import pl.dicedev.excetpions.MissingAssetsFilterException;
 
-@Component
+@Component("forAssertValidator")
 public class AssetsFilterParametersValidator extends FilterParametersValidator {
 
     @Override

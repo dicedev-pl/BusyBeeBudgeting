@@ -1,6 +1,8 @@
 package pl.dicedev.filters;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import pl.dicedev.enums.FilterParametersCalendarEnum;
+import pl.dicedev.enums.FilterSpecification;
 import pl.dicedev.enums.MonthsEnum;
 import pl.dicedev.repositories.entities.UserEntity;
 
@@ -11,7 +13,15 @@ import java.util.Map;
 
 public abstract class FilterRange<T> {
 
+    @Autowired
+    private FilterStrategy filterStrategy;
+
     public List<T> getAllByFilter(Map<String, String> filters, UserEntity user) {
+        if (FilterSpecification.FOR_EXPENSES.getValidator().equals(getFilterName()))
+            filterStrategy.checkFilterForSpecification(filters, FilterSpecification.FOR_EXPENSES);
+        if (FilterSpecification.FOR_ASSETS.getValidator().equals(getFilterName()))
+            filterStrategy.checkFilterForSpecification(filters, FilterSpecification.FOR_ASSETS);
+
         if (filters.containsKey(FilterParametersCalendarEnum.DATE_TO.getKey())) {
             String dateFrom = filters.get(FilterParametersCalendarEnum.DATE_FORM.getKey());
             String dateTo = filters.get(FilterParametersCalendarEnum.DATE_TO.getKey());
@@ -43,5 +53,7 @@ public abstract class FilterRange<T> {
     }
 
     public abstract List<T> getAllEntityBetweenDate(Instant fromDate, Instant toDate, UserEntity user);
+
+    protected abstract String getFilterName();
 
 }

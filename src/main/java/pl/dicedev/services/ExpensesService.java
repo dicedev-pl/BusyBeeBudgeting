@@ -2,9 +2,7 @@ package pl.dicedev.services;
 
 import org.springframework.stereotype.Service;
 import pl.dicedev.builders.ExpensesDtoBuilder;
-import pl.dicedev.filters.ExpensesFilterParametersValidator;
 import pl.dicedev.filters.ExpensesFilterRange;
-import pl.dicedev.filters.FilterParametersValidator;
 import pl.dicedev.filters.FilterRange;
 import pl.dicedev.mappers.ExpensesMapper;
 import pl.dicedev.repositories.ExpensesRepository;
@@ -24,19 +22,16 @@ public class ExpensesService {
     private final ExpensesMapper expensesMapper;
     private final ExpensesRepository expensesRepository;
     private final UserLogInfoService userLogInfoService;
-    private final FilterParametersValidator filterParametersValidator;
     private final FilterRange<ExpensesEntity> expensesFilterRange;
 
     public ExpensesService(
             ExpensesMapper expensesMapper,
             ExpensesRepository expensesRepository,
             UserLogInfoService userLogInfoService,
-            ExpensesFilterParametersValidator filterParametersValidator,
             ExpensesFilterRange expensesFilterRange) {
         this.expensesMapper = expensesMapper;
         this.expensesRepository = expensesRepository;
         this.userLogInfoService = userLogInfoService;
-        this.filterParametersValidator = filterParametersValidator;
         this.expensesFilterRange = expensesFilterRange;
     }
 
@@ -64,7 +59,6 @@ public class ExpensesService {
 
     public List<ExpensesDto> getFilteredExpenses(Map<String, String> filters) {
         UserEntity user = userLogInfoService.getLoggedUserEntity();
-        filterParametersValidator.assertFilter(filters);
         return expensesFilterRange.getAllByFilter(filters, user).stream()
                 .map(expensesMapper::fromEntityToDto)
                 .collect(Collectors.toList());

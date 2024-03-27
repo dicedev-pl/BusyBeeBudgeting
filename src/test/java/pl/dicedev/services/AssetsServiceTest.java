@@ -39,8 +39,7 @@ class AssetsServiceTest {
     private UserLogInfoService userLogInfoService;
     @Mock
     private AssetsFilterRange assetsFilterRange;
-    @Mock
-    private AssetsFilterParametersValidator filterParametersValidator;
+
 
     private final AssetValidator assetValidator = new AssetValidator();
     private final AssetsMapper assetsMapper = new AssetsMapper();
@@ -52,7 +51,6 @@ class AssetsServiceTest {
         service = new AssetsService(assetsRepository,
                 assetsMapper,
                 assetValidator,
-                filterParametersValidator,
                 userLogInfoService,
                 assetsFilterRange);
     }

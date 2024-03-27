@@ -3,7 +3,7 @@ package pl.dicedev.filters;
 import org.springframework.stereotype.Component;
 import pl.dicedev.excetpions.MissingExpensesFilterException;
 
-@Component
+@Component("forExpensesValidator")
 public class ExpensesFilterParametersValidator extends FilterParametersValidator {
 
     @Override
